@@ -35,7 +35,7 @@ fn main() {
 
     println!("Done!! Final Positions:");
     for i in 0..bars[2].discs.len() {
-        println!("{}", i);
+        println!("{}", bars[2].discs[i]);
     }
 
     match diff {
