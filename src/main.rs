@@ -1,5 +1,3 @@
-use std::time;
-
 struct Bar {
     discs: Vec<u8>,
     error: String
@@ -7,7 +5,7 @@ struct Bar {
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
-    let COUNT:u8 = args[1].parse().unwrap();
+    let count:u8 = args[1].parse().unwrap();
     
     let mut bars: [Bar; 3] = [
         Bar {
@@ -23,13 +21,13 @@ fn main() {
             error: "".to_string()
         }
     ];
-    for i in  0..COUNT{
+    for i in  0..count{
         bars[0].discs.push(i);
     }
 
     let start = std::time::SystemTime::now();
 
-    move_through(& mut bars, 0, 2, COUNT);
+    move_through(& mut bars, 0, 2, count);
 
     let diff = start.elapsed();
 
