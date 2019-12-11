@@ -1,3 +1,5 @@
+use std::time;
+
 struct Bar {
     discs: Vec<u8>,
     error: String
@@ -25,11 +27,24 @@ fn main() {
         bars[0].discs.push(i);
     }
 
+    let start = std::time::SystemTime::now();
+
     move_through(& mut bars, 0, 2, COUNT);
+
+    let diff = start.elapsed();
 
     println!("Done!! Final Positions:");
     for i in 0..bars[2].discs.len() {
         println!("{}", i);
+    }
+
+    match diff {
+        Ok(elapsed) => {
+            println!("Time taken: {}", elapsed.as_secs_f64());
+        }
+        Err(e) => {
+            println!("Error: {:?}", e);
+        }
     }
 }
 
