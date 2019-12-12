@@ -1,3 +1,7 @@
+use std::fs::File;
+use std::fs::OpenOptions;
+use std::io::prelude::*;
+
 struct Bar {
     discs: Vec<u8>,
     error: String
@@ -6,6 +10,11 @@ struct Bar {
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     let count:u8 = args[1].parse().unwrap();
+
+    let file_name = format!("hanoi_solution_{}.txt.gitignore", count);
+
+    let _file = File::create(file_name.clone())
+        .expect("Could not create output file!!");
     
     let mut bars: [Bar; 3] = [
         Bar {
@@ -27,7 +36,7 @@ fn main() {
 
     let start = std::time::SystemTime::now();
 
-    move_through(& mut bars, 0, 2, count);
+    move_through(& mut bars, 0, 2, count, file_name.clone());
 
     let diff = start.elapsed();
 
@@ -46,7 +55,8 @@ fn main() {
     }
 }
 
-fn move_through(mut bars: &mut [Bar; 3], from: usize, to: usize, from_count: u8) -> &mut [Bar; 3] { 
+fn move_through(mut bars: &mut [Bar; 3], from: usize, to: usize, from_count: u8, file_name: String) -> &mut [Bar; 3] { 
+
     for i in bars.iter() {
         if i.error != "".to_string() {
             panic!(i.error.clone());
@@ -65,7 +75,12 @@ fn move_through(mut bars: &mut [Bar; 3], from: usize, to: usize, from_count: u8)
         bars[to].discs[0] > bars[from].discs[0] {
             bars[to].discs.insert(0, bars[from].discs[0]);
             bars[from].discs.remove(0);
+
+            let mut file = OpenOptions::new().append(true).open(file_name)
+                .expect("Could not open file in recursion!!");
             println!("Moving disc {} from {} to {}", bars[to].discs[0], from, to);
+            file.write(format!("Moving disk {} from {} to {}\n", bars[to].discs[0] + 1, from + 1, to + 1).as_bytes())
+                .expect("Could not write to file in recursion!!");
             return bars;
         }
         else {
@@ -82,12 +97,12 @@ fn move_through(mut bars: &mut [Bar; 3], from: usize, to: usize, from_count: u8)
             }
         }
         
-        bars = move_through(bars, from.clone(), through.clone(), from_count - 1);
+        bars = move_through(bars, from.clone(), through.clone(), from_count - 1, file_name.clone());
         
         
-        bars = move_through(bars, from.clone(), to.clone(), 1);
+        bars = move_through(bars, from.clone(), to.clone(), 1, file_name.clone());
         
-        bars = move_through(bars, through.clone(), to.clone(), from_count - 1);
+        bars = move_through(bars, through.clone(), to.clone(), from_count - 1, file_name.clone());
         
     }
     return bars;
