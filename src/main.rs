@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::prelude::*;
+use std::env;
 
 struct Bar {
     discs: Vec<u8>,
@@ -11,7 +12,31 @@ fn main() {
     let args: Vec<String> = std::env::args().collect();
     let count:u8 = args[1].parse().unwrap();
 
-    let file_name = format!("hanoi_solution_{}.txt.gitignore", count);
+    let file_name: String;
+
+    if cfg!(windows) {
+        let key = "%HOMEPATH%";
+        match env::var(key) {
+            Ok(val) => {
+                file_name = format!("{}/Documents/hanoi_solutions_{}.txt", val, count);
+            }
+            Err(e) => {
+                panic!("e");
+            }
+        }
+        
+    }
+    else {
+        let key = "HOME";
+        match env::var(key) {
+            Ok(val) => {
+                file_name = format!("{}/Documents/hanoi_solutions_{}.txt", val, count);
+            }
+            Err(e) => {
+                panic!(e);
+            }
+        }
+    }    
 
     let _file = File::create(file_name.clone())
         .expect("Could not create output file!!");
